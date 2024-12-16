@@ -1,0 +1,318 @@
+:root {
+    --cell-size: min(45px, calc((100vmin - 200px) / 7));
+    --grid-color: #e3f2fd;
+    --border-color: #90caf9;
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1a237e, #0d47a1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: min(95vw, 600px);
+    max-height: 95vh;
+}
+
+.game-header {
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(144, 202, 249, 0.3);
+}
+
+.game-header h1 {
+    color: #1976d2;
+    margin: 0 0 10px 0;
+    font-size: min(2em, 5vmin);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-description {
+    color: #37474f;
+    font-size: min(0.9em, 3vmin);
+    line-height: 1.4;
+    margin: 0;
+    padding: 0 10px;
+}
+
+.hud {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: min(16px, 3vmin);
+    text-align: center;
+}
+
+.level-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+.level-progress {
+    letter-spacing: 2px;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(144, 202, 249, 0.2);
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 0 10px;
+}
+
+.grid-container {
+    background: var(--grid-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(7, var(--cell-size));
+    grid-template-rows: repeat(7, var(--cell-size));
+    gap: 6px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: min(1.8em, calc(var(--cell-size) * 0.6));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+}
+
+.cell.valid-move {
+    background: rgba(144, 202, 249, 0.1);
+    border: 2px dashed var(--border-color);
+}
+
+.cell.valid-move::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px dashed rgba(25, 118, 210, 0.5);
+    border-radius: 6px;
+    animation: dashedBorder 1s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes dashedBorder {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.cell.valid-move:hover {
+    background: rgba(144, 202, 249, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(25, 118, 210, 0.4);
+}
+
+.cell.player {
+    background: rgba(144, 202, 249, 0.3);
+    border-color: #1976d2;
+    border-width: 3px;
+    animation: pulse 2s infinite;
+    z-index: 1;
+}
+
+.cell.target {
+    background: rgba(255, 235, 238, 0.3);
+    border-color: #e91e63;
+    animation: glow 2s infinite;
+}
+
+.cell.penalty {
+    background: rgba(244, 67, 54, 0.1);
+    border-color: #f44336;
+}
+
+.cell.missing {
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05) 10px,
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.1) 20px
+    );
+    border: none;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.cell.mine-revealed {
+    animation: mineExplode 0.5s ease-out;
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #f44336;
+}
+
+.controls-info {
+    padding: 10px;
+    background: rgba(144, 202, 249, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    font-size: min(0.8em, 2.5vmin);
+    color: #1976d2;
+    margin: 0 10px;
+}
+
+.controls-info p {
+    margin: 5px 0;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px #e91e63; }
+    50% { box-shadow: 0 0 20px #e91e63; }
+    100% { box-shadow: 0 0 5px #e91e63; }
+}
+
+@keyframes mineExplode {
+    0% {
+        transform: scale(1);
+        background: rgba(244, 67, 54, 0.2);
+    }
+    50% {
+        transform: scale(1.2);
+        background: rgba(244, 67, 54, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        background: rgba(244, 67, 54, 0.2);
+    }
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    animation: popupAppear 0.3s ease-out;
+}
+
+@keyframes popupAppear {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-title {
+    color: #1976d2;
+    margin: 0 0 15px 0;
+    font-size: 1.5em;
+}
+
+.popup-message {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.popup-button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.popup-button:hover {
+    background: #1565c0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Media query for very small screens */
+@media (max-height: 600px) {
+    :root {
+        --cell-size: min(35px, calc((100vmin - 160px) / 7));
+    }
+    
+    .game-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .game-description {
+        display: none;
+    }
+    
+    .controls-info {
+        display: none;
+    }
+    
+    .game-header {
+        padding-bottom: 10px;
+    }
+    
+    .hud {
+        gap: 5px;
+    }
+    
+    .grid-container {
+        padding: 10px;
+        gap: 4px;
+    }
+}
